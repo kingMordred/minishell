@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
         cmd = get_command();
         count = word_count(cmd);
         parsedCmd = parse_command(cmd, count);
+        exec_command(parsedCmd);
 
         free(cmd);
         for(int i = 0; i < count; i++)

@@ -42,7 +42,7 @@ char** parse_command(const char* cmd, const int count)
     char **parsedCmd;
     int index = 0;
 
-    parsedCmd = (char**) malloc(count * sizeof(char*));
+    parsedCmd = (char**) malloc((count) * sizeof(char*));
     if(!parsedCmd)
     {
         perror("error allocating parsed command");
@@ -58,6 +58,33 @@ char** parse_command(const char* cmd, const int count)
         index++;
     }
 
+    //remove \n character
+    for(int i = 0; i < strlen(parsedCmd[count-1]); i++)
+    {
+        if(parsedCmd[count-1][i] == '\n') parsedCmd[count-1][i] = '\0';
+    }
+
     free(str);
     return parsedCmd;
+}
+
+int exec_command(char** cmd)
+{
+    //we need to fork and wait or else the program exits after command executes such as ls
+    pid_t pid = fork();
+
+    if(pid == -1)
+    {
+        perror("fork");
+    }
+    else if(pid > 0)
+    {
+        int status;
+        waitpid(pid, &status, 0);
+    }
+    else
+    {
+        execvp(cmd[0], cmd);
+    }
+
 }
