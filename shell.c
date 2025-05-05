@@ -10,7 +10,7 @@ char* get_command()
     nread = getline(&line, &len, stdin);
     
     //get input
-    printf("Retrieved line of length %zd:\n", nread);
+    //printf("Retrieved line of length %zd:\n", nread);
     fwrite(line, nread, 1, stdout);
     
     return line;
@@ -59,9 +59,9 @@ char** parse_command(const char* cmd, const int count)
     }
 
     //remove \n character
-    for(int i = 0; i < strlen(parsedCmd[count-1]); i++)
+    for(int i = 0; i < strlen(parsedCmd[index-1]); i++)
     {
-        if(parsedCmd[count-1][i] == '\n') parsedCmd[count-1][i] = '\0';
+        if(parsedCmd[index-1][i] == '\n') parsedCmd[index-1][i] = '\0';
     }
 
     free(str);
@@ -70,21 +70,26 @@ char** parse_command(const char* cmd, const int count)
 
 int exec_command(char** cmd)
 {
-    //we need to fork and wait or else the program exits after command executes such as ls
-    pid_t pid = fork();
-
-    if(pid == -1)
-    {
-        perror("fork");
-    }
-    else if(pid > 0)
-    {
-        int status;
-        waitpid(pid, &status, 0);
-    }
+    if(!strncmp(cmd[0], "exit", 4)) return 0;
+    else if(!strncmp(cmd[0], "cd", 2)) return 1;
     else
     {
-        execvp(cmd[0], cmd);
-    }
+        //we need to fork and wait or else the program exits after command executes such as ls
+        pid_t pid = fork();
 
+        if(pid == -1)
+        {
+            perror("fork");
+        }
+        else if(pid > 0)
+        {
+            int status;
+            waitpid(pid, &status, 0);
+        }
+        else
+        {
+            execvp(cmd[0], cmd);
+        }
+    }
+    
 }

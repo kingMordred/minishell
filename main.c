@@ -1,8 +1,5 @@
 /*
-    What this program should be able to do:
-        - Read a line of text from the user
-        - Parse/ Separate the command and arguments
-        - Execute the command; fork() + execvp()
+    To do:
         - Handle simple buit-in commands like cd and exit
         - Handle exit/ sigint cleanly; allow the user to type exit to quit
         ┌────────────┐
@@ -38,17 +35,19 @@ int main(int argc, char *argv[])
     int count = 0;
     char *cmd;
     char **parsedCmd;
-    //while (1 || sig)
-    //get_command();
-    //parse_command();
-    //exec_command();
+    int ret;
     
     while(1)
     {
         cmd = get_command();
         count = word_count(cmd);
         parsedCmd = parse_command(cmd, count);
-        exec_command(parsedCmd);
+        ret = exec_command(parsedCmd);
+        if(ret == 0) break;
+        else if(ret == 1)
+        {
+            chdir(parsedCmd[1]);
+        }
 
         free(cmd);
         for(int i = 0; i < count; i++)
